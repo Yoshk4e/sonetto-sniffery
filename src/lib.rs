@@ -53,7 +53,7 @@ pub unsafe extern "system" fn DllMain(
             unsafe { windows::Win32::System::Console::AllocConsole(); }
             thread::sleep(Duration::from_secs(1));
             let vis_tx = visualizer::init_visualizer_server();
-            println!("[sniffer] visualizer server started on ws://127.0.0.1:8888/ws");
+            println!("[sniffer] visualizer server started on ws://127.0.0.1:40510/ws");
             
             let game_assembly_base = loop {
                 let h = unsafe { GetModuleHandleA(PCSTR(b"GameAssembly.dll\0".as_ptr())) };
