@@ -12,7 +12,7 @@ a packet sniffer and a visualizer using frontend from [Crepe's old sniffer](http
 - reading server to client messages ( as i'm hooking a specific handler inside and don't know really how to go about it )
 
 ## Usage
-- you should have node installed as it is required for the frontend then inisde the directory run ``npm install``,``npm run build`` then ``npm run start`` use the address it showed you and you should be there ( for some reason it isn't working with browsers other than firefox so yea that too )
+- you should have node installed as it is required for the frontend then inisde the directory run ``npm install``,``npm run build`` then ``npm run start`` use the address it showed you and you should be there ~( for some reason it isn't working with browsers other than firefox so yea that too )~
 - compile the dll wait 5 secs for the game to start then start ( note: injecting directly doesn't work )
 - the dll interfaces with the frontend but you still have console output you can either ignore it or look at it instead of the visualizer ( depends on person tbh )
 
