@@ -26,4 +26,4 @@ a packet sniffer and a visualizer using frontend from [Crepe's old sniffer](http
 - You're welcome to submit through a pull request
 
 ## License
-This project is licensed under the [MIT]() licesnse
+This project is licensed under the [MIT](https://github.com/Yoshk4e/sonetto-sniffery/blob/master/LICENSE) licesnse
