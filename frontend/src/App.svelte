@@ -16,7 +16,7 @@ import VirtualList from 'svelte-virtual-list-ce';
 import Packet from './Packet.svelte';
 import { tick, onMount } from 'svelte';
 import Highlight from "svelte-highlight";
-import json from "svelte-highlight/src/languages/json";
+import { json } from 'svelte-highlight/src/languages/json';
 import materialDarker from "svelte-highlight/src/styles/material-darker";
 import { JSONEditor } from "svelte-jsoneditor";
 import "svelte-jsoneditor/themes/jse-theme-dark.css";
