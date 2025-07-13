@@ -12,10 +12,6 @@ let ws;
 let scrollToIndex = () => {};
 let scrollToIndexFilter = () => {};
 let endIndex, filterEndIndex;
-let editor = null;
-let decodeEditor = null;
-let editorCss = '';
-let editorsReady = false; // Track editor initialization
 import VirtualList from 'svelte-virtual-list-ce';
 import Packet from './Packet.svelte';
 import { tick, onMount } from 'svelte';
@@ -82,7 +78,7 @@ function connect() {
 // event emmited when connected
 	ws = new WebSocket('ws://localhost:40510/ws');
 	ws.onopen = () => {
-		console.log('[DEBUG] ws://localhost:40510 connected @ ' + new Date());
+		console.log('[DEBUG] ws://localhost:40510/ws connected @ ' + new Date());
 		// sending a send event to websocket server
 		ws.send('{"cmd":"ConnectReq","data":"iridium"}')
 		clearTimeout(wsTimer);
@@ -174,85 +170,54 @@ function sendFile(e) {
 	reader.readAsBinaryString(file);
 }
 
-async function showPacketDetails(packet) {
-    try {
-      if (!packet) {
-        console.warn('No packet provided to showPacketDetails');
-        return;
-      }
-      currentPacket = packet;
-      await tick(); // Wait for DOM updates
-      if (!editorsReady) {
-        console.warn('Editors not ready, retrying after delay...');
-        await new Promise((resolve) => setTimeout(resolve, 100)); // Brief delay to allow editor mounting
-        if (!editorsReady) {
-          console.error('Editors still not ready, aborting packet details update');
-          return;
-        }
-      }
-      if (packet.object && packet.decode && showDecode) {
-        editorCss = 'two-editor';
-      } else {
-        editorCss = 'one-editor';
-      }
-      if (!packet.object && packet.decode) {
-        showDecode = true;
-      }
-      if (packet.object && editor && typeof editor.set === 'function') {
-        editor.set({ json: packet.object });
-      } else {
-        console.warn('Editor not available or invalid for packet object');
-      }
-      if (showDecode && packet.decode && decodeEditor && typeof decodeEditor.set === 'function') {
-        decodeEditor.set({ json: packet.decode });
-      } else {
-        console.warn('Decode editor not available or invalid for packet decode');
-      }
-    } catch (e) {
-      console.error('Error in showPacketDetails:', e);
-    }
-  }
+let editor, decodeEditor = true;
+let editorCss = "";
+function showPacketDetails(packet) {
+	currentPacket = packet;
+		tick().then(() => {
+			if (packet.object && packet.decode && showDecode) {
+				editorCss = "two-editor";
+			} else {
+				editorCss = "one-editor";
+			}
+			if (!packet.object && packet.decode){
+				showDecode = true;
+			}
+			if (packet.object) {
+				editor.set({ json: packet.object });
+			}
+			if (showDecode && packet.decode) {
+				decodeEditor.set({ json: packet.decode });
+			}
+		});
 
-async function handleShowDecode() {
-    try {
-      await tick();
-      showDecode = !showDecode;
-      if (currentPacket) {
-        await showPacketDetails(currentPacket);
-      }
-    } catch (e) {
-      console.error('Error in handleShowDecode:', e);
-    }
-  }
+	}
 
-  function handleRenderMenu(mode, items) {
-    const separator = { separator: true };
-    const rawDecButton = {
-      onClick: handleShowDecode,
-      text: 'RD',
-      title: 'Raw Decode',
-      className: 'jse-button raw-decode-btn',
-    };
-    const space = { space: true };
-    const itemsWithoutSpace = items.slice(0, items.length - 1);
-    return itemsWithoutSpace.concat([separator, rawDecButton, space]);
-  }
+let showDecode = false;
+function handleShowDecode() {
+	tick().then(() => { 
+		showDecode = !showDecode;
+		showPacketDetails(currentPacket);
+	});
 
-  // Track editor readiness
-  onMount(() => {
-    const checkEditors = () => {
-      if (editor && decodeEditor) {
-        editorsReady = true;
-        console.log('Editors initialized successfully');
-      } else {
-        setTimeout(checkEditors, 100); // Retry until editors are ready
-      }
-    };
-    checkEditors();
-    return () => {
-      editorsReady = false; // Cleanup on unmount
-    };
-  });
+}
+function handleRenderMenu(mode, items) {
+	const separator = {
+		separator: true,
+	};
+	const rawDecButton = {
+		onClick: handleShowDecode,
+		text: "RD",
+		title: "Raw Decode",
+		className: "jse-button raw-decode-btn",
+	};
+
+	const space = {
+		space: true,
+	};
+	const itemsWithoutSpace = items.slice(0, items.length - 1);
+	return itemsWithoutSpace.concat([separator, rawDecButton, space]);
+}
 
 function scrollToEnd() {
 	scrollToIndex(Packets.length - 1, {behavior: 'auto'});
